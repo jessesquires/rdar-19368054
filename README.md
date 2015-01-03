@@ -1,4 +1,4 @@
 swift-coredata-bug
 ==================
 
-Example project showing Swift compiler error
+Example project showing Swift compiler bug
