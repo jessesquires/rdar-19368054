@@ -24,7 +24,7 @@ let person = NSEntityDescription.insertNewObjectForEntityForName("Person", inMan
 
 ````swift
 //	Workaround
-//  Implement the following convenience initializers
+//  Implement the following convenience initializer
 class Person: NSManagedObject {
 
     convenience init(context: NSManagedObjectContext) {
