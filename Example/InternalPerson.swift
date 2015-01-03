@@ -9,12 +9,12 @@ internal class InternalPerson: NSManagedObject {
     @NSManaged internal var birthDate: NSDate
     @NSManaged internal var name: String
     
-    convenience init(insertIntoManagedObjectContext context: NSManagedObjectContext?) {
-        let e = NSEntityDescription.entityForName("InternalPerson", inManagedObjectContext: context!)!
-        self.init(entity: e, insertIntoManagedObjectContext: context)
+    convenience internal init(context: NSManagedObjectContext) {
+        let entityDescription = NSEntityDescription.entityForName("InternalPerson", inManagedObjectContext: context)!
+        self.init(entity: entityDescription, insertIntoManagedObjectContext: context)
     }
     
-    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
+    override internal init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
         super.init(entity: entity, insertIntoManagedObjectContext: context)
     }
 }

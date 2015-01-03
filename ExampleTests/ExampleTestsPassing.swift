@@ -2,7 +2,7 @@
 import XCTest
 import CoreData
 
-import Example
+import Example // <-- Import App module
 
 class ExampleTestsPassing: XCTestCase {
 
