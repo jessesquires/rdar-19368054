@@ -22,4 +22,11 @@ class ExampleTestsFailing: XCTestCase {
         }
     }
     
+    func test_workaround() {
+        let stack = CoreDataStack()
+        
+        let person = InternalPerson(insertIntoManagedObjectContext: stack.context)
+        XCTAssertNotNil(person, "Person should not be nil")
+    }
+    
 }
