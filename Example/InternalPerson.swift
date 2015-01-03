@@ -14,7 +14,4 @@ internal class InternalPerson: NSManagedObject {
         self.init(entity: entityDescription, insertIntoManagedObjectContext: context)
     }
     
-    override internal init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
-    }
 }
