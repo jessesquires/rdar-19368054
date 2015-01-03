@@ -32,8 +32,5 @@ class Person: NSManagedObject {
         self.init(entity: entityDescription, insertIntoManagedObjectContext: context)
     }
     
-    override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
-        super.init(entity: entity, insertIntoManagedObjectContext: context)
-    }
 }
 ````
