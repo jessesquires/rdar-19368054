@@ -11,6 +11,7 @@ class ExampleTestsPassing: XCTestCase {
         
         //  public class in App Target
         //  NOT added to Test Target, instead imported above
+        //  works as expected
 
         let object = NSEntityDescription.insertNewObjectForEntityForName("PublicPerson", inManagedObjectContext: stack.context)
         
