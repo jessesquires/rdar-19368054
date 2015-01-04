@@ -23,13 +23,99 @@ let person = NSEntityDescription.insertNewObjectForEntityForName("Person", inMan
 ### Workaround
 
 ````swift
-//	Workaround
+//  Workaround
 //  Implement the following convenience initializer
 class Person: NSManagedObject {
 
     convenience init(context: NSManagedObjectContext) {
         let entityDescription = NSEntityDescription.entityForName("Person", inManagedObjectContext: context)!
         self.init(entity: entityDescription, insertIntoManagedObjectContext: context)
+    }
+    
+}
+````
+
+### Swift extensions will not work
+
+It would be nice to generalize this by putting this convenience initializer in an extension. Unfortunately, that will not work. Here are some attempts:
+
+Adding a **class** func `entityName()`
+````swift
+//  THIS DOES NOT WORK
+//  In the initializer, NSManagedObject.entityName() throws the assert even if you override entityName()
+//  This is because it calls the method on NSManagedObject, not your subclass
+extension NSManagedObject {
+    
+    class func entityName() -> String {
+        //  always throws
+        assert(false, "Subclasses must override this method")
+        return ""
+    }
+    
+    convenience init(context: NSManagedObjectContext) {
+        let entityDescription = NSEntityDescription.entityForName(NSManagedObject.entityName(), inManagedObjectContext: context)!
+        self.init(entity: entityDescription, insertIntoManagedObjectContext: context)
+    }
+}
+````
+
+Adding an **instance** func `entityName()`
+````swift
+//  THIS DOES NOT WORK
+//  Error: use of 'self' in delegating initializer before self.init is called
+extension NSManagedObject {
+    
+    func entityName() -> String {
+        assert(false, "Subclasses must override this method")
+        return ""
+    }
+    
+    convenience init(context: NSManagedObjectContext) {
+        //  can't use 'self' before calling 'self.init' in a convenience init
+        let entityDescription = NSEntityDescription.entityForName(self.entityName(), inManagedObjectContext: context)!
+        self.init(entity: entityDescription, insertIntoManagedObjectContext: context)
+    }
+}
+
+````
+
+Adding a **class** func `entityName()` using `NSStringFromClass()`
+
+````swift
+//  THIS DOES NOT WORK
+//  Fatal error: unexpectedly found nil while unwrapping an Optional value
+extension NSManagedObject {
+    
+    class func entityName() -> String {
+        //  Swift managed object class are prefixed with module name, 'ModuleName.ClassName'
+        //  For this to work with Core Data, we need to parse 'ClassName' only
+        let fullClassName: String = NSStringFromClass(object_getClass(self))
+        let classNameComponents: [String] = split(fullClassName) { $0 == "." }
+        return last(classNameComponents)!
+    }
+    
+    convenience init(context: NSManagedObjectContext) {
+        let entityDescription = NSEntityDescription.entityForName(NSManagedObject.entityName(), inManagedObjectContext: context)!
+        self.init(entity: entityDescription, insertIntoManagedObjectContext: context)
+    }
+}
+````
+
+Same as above, but use a class factory method for inserting new managed object
+````swift
+//  THIS DOES NOT WORK
+//  This is the original bug!
+//  insertNewObjectInContext(context:) returns nil in Test Target, which prevents you from testing your model
+extension NSManagedObject {
+ 
+    class public func entityName() -> String {
+        let fullClassName: String = NSStringFromClass(object_getClass(self))
+        let classNameComponents: [String] = split(fullClassName) { $0 == "." }
+        return last(classNameComponents)!
+    }
+    
+    class public func insertNewObjectInContext(context: NSManagedObjectContext) -> AnyObject {
+        return NSEntityDescription.insertNewObjectForEntityForName(entityName(), inManagedObjectContext: context)
     }
     
 }
