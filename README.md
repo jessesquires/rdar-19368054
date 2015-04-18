@@ -37,6 +37,29 @@ class Person: NSManagedObject {
 
 ### Swift extensions will not work
 
+-------------------------------
+
+### Update!
+The following extension *will* work:
+
+````swift
+extension NSManagedObject {
+
+    class func entityName() -> String {
+        let fullClassName = NSStringFromClass(object_getClass(self))
+        let classNameComponents: [String] = split(fullClassName) { $0 == "." }
+        return last(classNameComponents)!
+    }
+
+    convenience init(context: NSManagedObjectContext) {
+        let entityDescription = NSEntityDescription.entityForName(self.dynamicType.entityName(), inManagedObjectContext: context)!
+        self.init(entity: entityDescription, insertIntoManagedObjectContext: context)
+    }
+}
+````
+
+--------------------------------
+
 It would be nice to generalize this by putting this convenience initializer in an extension. Unfortunately, that will not work. Here are some attempts:
 
 (1) A common strategy in Objective-C. Add a class method `entityName()` using `NSStringFromClass()` and a class factory method for a inserting new managed object
